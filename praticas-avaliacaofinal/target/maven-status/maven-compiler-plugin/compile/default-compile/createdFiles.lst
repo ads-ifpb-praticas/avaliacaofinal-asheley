@@ -1,0 +1,6 @@
+br\edu\ifpb\jsf\galeriabeans\Evento.class
+br\edu\ifpb\jsf\galeriaDAO\FotoDAO.class
+br\edu\ifpb\jsf\ConnectionFactory.class
+br\edu\ifpb\jsf\galeriaDAO\EventoDAO.class
+br\edu\ifpb\jsf\managedbeans\GaleriaBean.class
+br\edu\ifpb\jsf\galeriabeans\Foto.class

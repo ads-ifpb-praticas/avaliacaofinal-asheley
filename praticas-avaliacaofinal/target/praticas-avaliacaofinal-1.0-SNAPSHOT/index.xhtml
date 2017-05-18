@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+     
+    <h:head>
+        <title>Galleria</title>
+    </h:head>
+    <h:body style="background-color: #CCCCCC">
+        <h:form prependId="false" enctype="multipart/form-data">   
+            <p:panel id="dadosEvento" header="Exemplo Galeria" style="width: 600px;">            
+                <p:growl/>
+                <h:panelGrid columns="2">
+                    <h:outputText value="Nome"/>
+                    <p:inputText value="#{galeriaBean.evento.nome}" size="40"/>
+                    <h:outputText value="Data"/>
+                    <p:calendar value="#{galeriaBean.evento.data}" 
+                                timeZone="GMT-3" 
+                                navigator="true"                                
+                                pattern="dd/MM/yyyy"                            
+                                locale="pt_BR"/>
+                    <p:commandButton value="Salvar" action="#{galeriaBean.salvaEvento()}" update="tabelaEventos dadosEvento"/>
+                    <p:commandButton value="Limpar" onclick="form.reset()"/>
+                    <p:ajaxStatus>
+                        <f:facet name="start">
+                            <h:outputText value="aguarde..."/>
+                        </f:facet>
+                        <f:facet name="complete">
+                            <h:outputText value=""/>
+                        </f:facet>
+                    </p:ajaxStatus>
+                </h:panelGrid>                 
+            </p:panel>                
+            <p:dialog id="dialogFotos" position="top" widgetVar="dialogFotos" modal="true" minWidth="600" minHeight="500">                
+                <p:fileUpload fileUploadListener="#{galeriaBean.enviaImagem}"                              
+                              update="imagemTmp"
+                              cancelLabel="Cancelar"
+                              fileLimit="100000"
+                              fileLimitMessage="Imagem muito grande"                               
+                              label="Selecionar"
+                              invalidFileMessage="Tipo de imagem invÃ¡lido"
+                              invalidSizeMessage="Imagem muito grande"
+                              uploadLabel="Enviar"
+                              allowTypes="/(\.|\/)(jpe?g|png)$/">
+
+                </p:fileUpload>
+                <p:outputPanel id="dadosFoto">
+                    <h:panelGrid>                        
+                        <p:graphicImage cache="false" id="imagemTmp" value="#{galeriaBean.imagem}" height="300" style="margin: 0 auto;"/>
+                        <h:outputText value="DescriÃ§Ã£o"/>
+                        <p:inputText value="#{galeriaBean.foto.descricao}" size="49"/>
+                        <h:outputText value="Ordem"/>
+                        <p:inputMask mask="9" value="#{galeriaBean.foto.ordem}" size="5"/>
+                    </h:panelGrid>
+                </p:outputPanel>
+                <p:commandButton value="Adicionar" action="#{galeriaBean.salvaFotos()}" update="dadosFoto dadosEvento"/>                
+            </p:dialog>        
+            <p:dialog id="dialogGaleria" widgetVar="dialogGaleria" modal="true" position="top"
+                      minWidth="440" minHeight="500">                
+                <h:outputText value="Nenhuma imagem encontrada" rendered="#{galeriaBean.fotos.size()==0}"/>
+                <p:galleria value="#{galeriaBean.fotos}" 
+                            var="galeria" effect="slide" effectSpeed="2000"                                                        
+                            panelHeight="300" panelWidth="400"
+                            frameHeight="100" frameWidth="100" 
+                            <!--filmstripPosition="bottom" showOverlays="true">-->
+                    <p:graphicImage value="/temp/#{galeria.id}.jpg" cache="false" width="400" height="300"
+                                    title="#{galeria.descricao}" alt="#{galeria.descricao}"/>                                            
+
+                   <!--<p:galleriaOverlay title="#{galeria.descricao}">                         
+                    </p:galleriaOverlay>-->
+                </p:galleria>                
+            </p:dialog>                                     
+            <p:dataTable id="tabelaEventos"
+                         value="#{galeriaBean.eventos}" var="evento" style="width: 610px;" 
+                         emptyMessage="Nenhum evento cadastrado"
+                         rows="6" 
+                         paginator="true" 
+                         paginatorPosition="bottom" 
+                         paginatorAlwaysVisible="false">
+                <p:column headerText="Id">
+                    <h:outputText value="#{evento.id}"/>
+                </p:column>
+                <p:column headerText="Evento">
+                    <h:outputText value="#{evento.nome}"/>
+                </p:column>
+                <p:column headerText="Data">
+                    <h:outputText value="#{evento.data}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column>
+                    <p:commandButton image="ui-icon-plus" title="Adicionar Imagem" oncomplete="dialogFotos.show();" update="dadosFoto">
+                        <f:setPropertyActionListener target="#{galeriaBean.eventoSelecionado}" value="#{evento}"/>
+                    </p:commandButton>
+                    <p:commandButton image="ui-icon-search" title="Ver Imagens" action="#{galeriaBean.listaFotosEvento()}" update="dialogGaleria" oncomplete="dialogGaleria.show()">
+                        <f:setPropertyActionListener target="#{galeriaBean.eventoSelecionado}" value="#{evento}"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>            
+        </h:form>
+    </h:body>
+</html>
+
